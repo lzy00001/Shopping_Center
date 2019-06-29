@@ -29,7 +29,7 @@ SECRET_KEY = 'f#)662_zthrv#7tlt0c3o_#akcw$5#uygfbye%@=$oue!ji6^&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','www.shopping.site','api.shopping.site','localhost']
 
 
 # Application definition
