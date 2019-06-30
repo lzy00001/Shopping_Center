@@ -14,6 +14,7 @@ import logging
 
 
 from shopping_mall.libs.captcha.captcha import captcha
+from shopping_mall.utils.yuntongxun.sms import CCP
 from verifications import constants
 from verifications.serializers import ImageCodeCheckSerializer
 
@@ -41,50 +42,50 @@ class ImageCodeView(APIView):
         return HttpResponse(image, content_type="images/jpg")
 
 
-# class SMSCodeView(GenericAPIView):
-#     """
-#     短信验证码
-#     传入参数：
-#         mobile,     image_code_id, text
-#     """
-#     serializer_class = ImageCodeCheckSerializer
-#
-#     def get(self, request, mobile):
-#         # 校验参数  由序列化器完成
-#         serializer = self.get_serializer(data=request.query_params)
-#         serializer.is_valid(raise_exception=True)
-#
-#         # 生成短信验证码
-#         sms_code = '%06d' % random.randint(0, 999999)
-#
-#         # 保存短信验证码  保存发送记录
-#         redis_conn = get_redis_connection('verify_codes')
-#         # redis_conn.setex("sms_%s" % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
-#         # redis_conn.setex("send_flag_%s" % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
-#
-#         # redis管道
-#         pl = redis_conn.pipeline()
-#         pl.setex("sms_%s" % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
-#         pl.setex("send_flag_%s" % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
-#
-#         # 让管道通知redis执行命令
-#         pl.execute()
-#
-#         # # 发送短信
-#         try:
-#             ccp = CCP()
-#             expires = constants.SMS_CODE_REDIS_EXPIRES // 60
-#             result = ccp.send_template_sms(mobile, [sms_code, expires], constants.SMS_CODE_TEMP_ID)
-#         except Exception as e:
-#             logger.error("发送验证码短信[异常][ mobile: %s, message: %s ]" % (mobile, e))
-#             return Response({'message': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#         else:
-#             if result == 0:
-#                 logger.info("发送验证码短信[正常][ mobile: %s ]" % mobile)
-#                 return Response({'message': 'OK'})
-#             else:
-#                 logger.warning("发送验证码短信[失败][ mobile: %s ]" % mobile)
-#                 return Response({'message': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class SMSCodeView(GenericAPIView):
+    """
+    短信验证码
+    传入参数：
+        mobile,     image_code_id, text
+    """
+    serializer_class = ImageCodeCheckSerializer
+
+    def get(self, request, mobile):
+        # 校验参数  由序列化器完成
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        # 生成短信验证码
+        sms_code = '%06d' % random.randint(0, 999999)
+
+        # 保存短信验证码  保存发送记录
+        redis_conn = get_redis_connection('verify_codes')
+        # redis_conn.setex("sms_%s" % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        # redis_conn.setex("send_flag_%s" % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
+
+        # redis管道
+        pl = redis_conn.pipeline()
+        pl.setex("sms_%s" % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        pl.setex("send_flag_%s" % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
+
+        # 让管道通知redis执行命令
+        pl.execute()
+
+        # # 发送短信
+        try:
+            ccp = CCP()
+            expires = constants.SMS_CODE_REDIS_EXPIRES // 60
+            result = ccp.send_template_sms(mobile, [sms_code, expires], constants.SMS_CODE_TEMP_ID)
+        except Exception as e:
+            logger.error("发送验证码短信[异常][ mobile: %s, message: %s ]" % (mobile, e))
+            return Response({'message': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            if result == 0:
+                logger.info("发送验证码短信[正常][ mobile: %s ]" % mobile)
+                return Response({'message': 'OK'})
+            else:
+                logger.warning("发送验证码短信[失败][ mobile: %s ]" % mobile)
+                return Response({'message': 'failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # # 使用celery发送短信验证码
         # expires = constants.SMS_CODE_REDIS_EXPIRES // 60
