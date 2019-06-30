@@ -42,13 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 添加app
-    'rest_framework',
+    # 'rest_framework',
+    'corsheaders',
     # 'shopping_mall.apps.users.apps.UsersConfig',
     'users.apps.UsersConfig',
     'verifications.apps.VerificationsConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -210,3 +212,15 @@ REST_FRAMEWORK = {
 
 # 用户注册
 AUTH_USER_MODEL = 'users.User'
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+# CORS
+# CORS_ORIGIN_WHITELIST = (
+#     '127.0.0.1:8080',
+#     'localhost:8080',
+#     'www.shopping.site:8080',
+#     'api.shopping.site:8080'
+# )
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
