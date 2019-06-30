@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     # 添加app
     'rest_framework',
     # 'shopping_mall.apps.users.apps.UsersConfig',
-    'users.apps.UsersConfig'
+    'users.apps.UsersConfig',
+    'verifications.apps.VerificationsConfig',
 ]
 
 MIDDLEWARE = [
